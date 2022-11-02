@@ -180,6 +180,9 @@ function totalHelper(stringComponentsArray, lastMessage, message, command) {
 	const userLifts = PR_MAP.get(user)
 	const totalLifts = userLifts[0] + userLifts[1] + userLifts[2]
 
+	message.channel.send('Your Bench: ' + userLifts[0] + ' lbs')
+	message.channel.send('Your Squat: ' + userLifts[1] + ' lbs')
+	message.channel.send('Your Deadlift: ' + userLifts[2] + ' lbs')
 	message.channel.send('Your 3 lifts add up to: ' + totalLifts + ' lbs')
 
 	if (totalLifts >= 1000) {
