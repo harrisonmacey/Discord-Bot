@@ -9,8 +9,10 @@ const BOT_CHANNEL = 'discord-bot-test'
 // Bot Commands
 const LOG_COMMAND = 'log'
 const TOP_COMMAND = 'top'
+const TOTAL_COMMAND = 'total'
 const EXPECTED_LOG_ARGS = 3
 const EXPECTED_TOP_ARGS = 2
+const EXPECTED_TOTAL_ARGS = 1
 
 // PR Types
 const BENCH = 'Bench'
@@ -58,6 +60,9 @@ client.on('message', async message => {
 		case TOP_COMMAND: 
 			topHelper(stringComponentsArray, lastMessage, message, command)
 			break
+		case TOTAL_COMMAND: 
+			totalHelper(stringComponentsArray, lastMessage, message, command)
+			break
 		default: 
 			break
 	}
@@ -75,7 +80,13 @@ function invalidInput(userInput, messageObject, commandType) {
 			messageObject.channel.send(userInput + ' is not valid')
 			messageObject.channel.send('Please follow the following format: ')
 			messageObject.channel.send(TOP_COMMAND + ' [' + BENCH + '/' + SQUAT + '/' + DEADLIFT + ']')
-			messageObject.channel.send('Example: log Bench 225')
+			messageObject.channel.send('Example: top Bench')
+			break
+		case TOTAL_COMMAND:
+			messageObject.channel.send(userInput + ' is not valid')
+			messageObject.channel.send('Please follow the following format: ')
+			messageObject.channel.send(TOTAL_COMMAND)
+			messageObject.channel.send('Example: total')
 			break
 		default: 
 			break
@@ -150,4 +161,28 @@ function topHelper(stringComponentsArray, lastMessage, message, command) {
 		message.channel.send(String(i+1) + ': ' + tempUser + ' - ' + tempWeight + 'lbs')
 	}
 
+}
+
+function totalHelper(stringComponentsArray, lastMessage, message, command) {
+
+	if (stringComponentsArray.length != EXPECTED_TOTAL_ARGS) {
+		invalidInput(lastMessage, message, command)
+		return
+	}
+
+	const user = message.author.username
+
+	if (PR_MAP.get(user) == undefined) {
+		message.channel.send('You do not have any lifts logged yet')
+		return
+	}
+
+	const userLifts = PR_MAP.get(user)
+	const totalLifts = userLifts[0] + userLifts[1] + userLifts[2]
+
+	message.channel.send('Your 3 lifts add up to: ' + totalLifts + ' lbs')
+
+	if (totalLifts >= 1000) {
+		message.channel.send('Congrats on being in the 1000+ lbs club!')
+	}
 }
